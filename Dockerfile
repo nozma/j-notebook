@@ -11,6 +11,7 @@ RUN apt-get update && apt-get -yq dist-upgrade \
  && rm -rf /var/lib/apt/lists/*
 
 # Install J
+USER jovyan
 RUN wget http://www.jsoftware.com/download/j806/install/j806_linux64.tar.gz && \ 
     tar -xvf j806_linux64.tar.gz && \
     echo install \'all\' | /home/jovyan/j64-806/bin/jconsole 
@@ -27,3 +28,11 @@ RUN mv jkernel-master jkernel  && \
     mkdir /opt/conda/lib/python3.6/site-packages/notebook/static/components/codemirror/mode/J && \
     mv jkernel/syntax/J.js /opt/conda/lib/python3.6/site-packages/notebook/static/components/codemirror/mode/J/J.js && \
     rm master.zip && rm -r jkernel/syntax jkernel/kernel_definition
+
+# Install widgets
+RUN conda install -c conda-forge ipywidgets -y
+RUN jupyter nbextension enable --py widgetsnbextension
+
+# Update pip
+RUN pip list --outdated --format=legacy | awk '{print $1}' | xargs pip install -U
+
